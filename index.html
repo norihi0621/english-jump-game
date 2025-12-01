@@ -1,0 +1,1041 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>英語ジャンプゲーム - オリジナルキャラクター</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(to bottom, #87CEEB 0%, #E0F6FF 100%);
+            overflow: hidden;
+        }
+
+        .game-container {
+            text-align: center;
+        }
+
+        h1 {
+            color: #FF6B6B;
+            font-size: 3em;
+            margin-bottom: 10px;
+            text-shadow: 3px 3px 0px #FFF;
+            -webkit-text-stroke: 2px #333;
+        }
+
+        .info-panel {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+
+        .score-board, .word-progress {
+            font-size: 1.8em;
+            color: #333;
+            font-weight: bold;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 20px;
+            display: inline-block;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .word-progress {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-width: 300px;
+        }
+
+        .target-word {
+            font-size: 0.8em;
+            color: rgba(255, 255, 255, 0.7);
+            margin-bottom: 5px;
+        }
+
+        .collected-letters {
+            font-size: 1.3em;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .collected {
+            color: #FFD700;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .not-collected {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        #gameCanvas {
+            border: 5px solid #333;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            cursor: pointer;
+            display: block;
+            margin: 0 auto;
+        }
+
+        .word-complete {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 999;
+        }
+
+        .word-complete.show {
+            display: flex;
+        }
+
+        .word-complete-content {
+            background: linear-gradient(135deg, #FFD700, #FFA500);
+            padding: 50px 70px;
+            border-radius: 30px;
+            text-align: center;
+            animation: celebrate 0.6s ease;
+            box-shadow: 0 10px 50px rgba(255, 215, 0, 0.5);
+        }
+
+        @keyframes celebrate {
+            0% {
+                transform: scale(0) rotate(-180deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(10deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .word-complete-content h2 {
+            font-size: 4em;
+            margin-bottom: 20px;
+            color: white;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .word-complete-content .word-display {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: bold;
+            letter-spacing: 10px;
+        }
+
+        .word-complete-content .word-meaning {
+            font-size: 2em;
+            color: white;
+            margin-bottom: 30px;
+        }
+
+        .game-over {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .game-over.show {
+            display: flex;
+        }
+
+        .game-over-content {
+            background: white;
+            padding: 40px 60px;
+            border-radius: 20px;
+            text-align: center;
+            animation: popup 0.5s ease;
+        }
+
+        @keyframes popup {
+            0% {
+                transform: scale(0) rotate(-180deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        .game-over-content h2 {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #FF6B6B;
+        }
+
+        .game-over-content p {
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .words-learned {
+            font-size: 1.3em;
+            color: #667eea;
+            margin-bottom: 30px;
+        }
+
+        button {
+            background: linear-gradient(to bottom, #FF6B6B, #FF5252);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5em;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            font-weight: bold;
+        }
+
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.6);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .continue-btn {
+            background: linear-gradient(to bottom, #4CAF50, #45a049);
+            box-shadow: 0 5px 15px rgba(76, 175, 80, 0.4);
+        }
+
+        .continue-btn:hover {
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.6);
+        }
+
+        .instructions {
+            margin-top: 20px;
+            font-size: 1.3em;
+            color: #333;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 15px 30px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        .music-control {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px 20px;
+            border-radius: 25px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+            font-size: 1.5em;
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .music-control:hover {
+            transform: scale(1.1);
+            background: white;
+        }
+
+        .start-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+
+        .start-screen.hide {
+            display: none;
+        }
+
+        .start-content {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 60px 80px;
+            border-radius: 30px;
+            text-align: center;
+            animation: popup 0.5s ease;
+        }
+
+        .start-content h2 {
+            font-size: 3.5em;
+            color: white;
+            margin-bottom: 30px;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+
+        .start-content p {
+            font-size: 1.5em;
+            color: white;
+            margin-bottom: 20px;
+        }
+
+        .music-note {
+            font-size: 2em;
+            margin-bottom: 30px;
+            animation: bounce 1s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .start-btn {
+            background: linear-gradient(to bottom, #FFD700, #FFA500);
+            color: #333;
+            font-size: 2em;
+            padding: 20px 60px;
+        }
+
+        .start-btn:hover {
+            background: linear-gradient(to bottom, #FFA500, #FF8C00);
+        }
+    </style>
+</head>
+<body>
+    <!-- スタート画面 -->
+    <div class="start-screen" id="startScreen">
+        <div class="start-content">
+            <h2>🎮 英語ジャンプゲーム 🎮</h2>
+            <div class="music-note">🎵 🎶 🎵</div>
+            <p>おしりプリプリダンス♪</p>
+            <p style="font-size: 1.2em;">音楽と効果音付きで楽しもう！</p>
+            <button class="start-btn" onclick="startGameWithMusic()">スタート！</button>
+        </div>
+    </div>
+
+    <!-- 音楽コントロール -->
+    <div class="music-control" id="musicControl" onclick="toggleMusic()">
+        🔊
+    </div>
+
+    <div class="game-container">
+        <h1>🎮 英語ジャンプゲーム 🎮</h1>
+        <div class="info-panel">
+            <div class="score-board">
+                スコア: <span id="score">0</span>
+            </div>
+            <div class="word-progress">
+                <div class="target-word">目標: <span id="targetWord">APPLE</span></div>
+                <div class="collected-letters" id="collectedLetters"></div>
+            </div>
+        </div>
+        <canvas id="gameCanvas" width="800" height="400"></canvas>
+        <div class="instructions">
+            <span class="emoji">👆</span> ジャンプしてアルファベットを集めよう！ <span class="emoji">📚</span>
+        </div>
+    </div>
+
+    <div class="word-complete" id="wordComplete">
+        <div class="word-complete-content">
+            <h2>🎉 完成！ 🎉</h2>
+            <div class="word-display" id="completedWord">APPLE</div>
+            <div class="word-meaning" id="wordMeaning">りんご 🍎</div>
+            <button class="continue-btn" onclick="continueGame()">次の単語へ！</button>
+        </div>
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <div class="game-over-content">
+            <h2>ゲームオーバー！</h2>
+            <p>スコア: <span id="finalScore">0</span></p>
+            <div class="words-learned">
+                覚えた単語: <span id="learnedWords">0</span>個 📖
+            </div>
+            <button onclick="restartGame()">もう一度！</button>
+        </div>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 音楽と効果音
+        const bgMusic = new Audio('https://www.genspark.ai/api/files/s/wHf7b5eg?token=Z0FBQUFBQnBMUURYU3NvWjY4eGhtX0JjSFA2U2FscjBxSTNlcXY3aGRtY2M0a0lhZkZTRDFnajY2Z2IzSWUydmpaOVR1SDJGVDFrMUNlRHh5aWlKRzJvRjVSMGk4bnN1bEdPQmFDOXZncFRucmo1WlprUnI2UkNpb0VUeDJkanFIV0tWeFdoSF9FX1d6NHU2QTV6c1AxMF80U2diM1BYaXdQQk11cmd4SnJfQ0NjR3BmVGNOWFE3MkJIWUZyamRjTmw5QVo4Nlo1a0w0TjZtYU85TUU5VWNFeG80LTRYdURpekRROE0weEVZYzJQcEZUMVhEdmR3emJuNWgyWkdEMjBkRmlPQS1nZmU3UFVSekhpNlgxeXdrWEpUQVU2V2R4VEE9PQ');
+        bgMusic.loop = true;
+        bgMusic.volume = 0.4;
+        
+        const coinSound = new Audio('https://www.genspark.ai/api/files/s/kw7x3Frj?token=Z0FBQUFBQnBMUURYNFNqMVRmSlVVM3lvVTRFZ3VfNkU1LWxHcDNiQ2ZXdDVUWTVIZzRjUEo4aEM3X1JtTWJLZUdxYlJoLVFvSzJMSkEwY04zNjFzTFNkQ1NneWhELVZJcUlNeHdSSjFUY09XenNEZTRPaWFCU2F3eWNEVzlqbHJ4dVhFUWh5QVhFbk0yZUtRelcwQURfWExnaGhGSUk0a0s1OEVqMDJsUmpiNFVYSkF2ZXRtWGxsN1lBdmFpczhpREtnRDJQazVoN0k5YzZISzEzYjRDdE1ja3kwcVRDSExnLWVfdXZsa1NWSHB0WGhIZmhuS2ZwRFRsdTVjZ3VuRUJ3eVJBNkZiZnQ1bk5aa0s2MzFRaFRpa2xtZm5pSV9aelE9PQ');
+        coinSound.volume = 0.6;
+        
+        const jumpSound = new Audio('https://www.genspark.ai/api/files/s/k9ALmx31?token=Z0FBQUFBQnBMVURYdTRVMm83WXV2QUlwWDZYSk51dDdWSTJJTE5SOWRka0ZCZ2FoV282UElwWldCM3dkbDJWYXZ1dVM2YUFrbDZkd3REMU1yWV9uMEp4ZmdWbXlnZUxCNmxYVzNFNEZXOWlMUTFaZmhINXlZQTNCX1Z6TUdkOG1CRHR4TW5CVlZxbGI0RVlBZVBfcDhyM2o5NUNiOXNyc1JlVHhhMkM0N3c1RWROSEZ5aE1fYjdQUW5RQzdwdXNOOVJLNDBBRER0U1gtQ1ZfU0pFWTJuRklDOVpVdE5NTHR6WGF5QTdKOUt6WHk5dVN6THcxQ3dCS2dNTmYxc2ROVlI4eWFPNm5kak1rclFULVVIekxVbWNmLTJQZEU2eUx1Znc9PQ');
+        jumpSound.volume = 0.5;
+        
+        let musicPlaying = false;
+
+        // 効果音を再生する関数
+        function playCoinSound() {
+            coinSound.currentTime = 0;
+            coinSound.play().catch(e => console.log('コイン音再生エラー:', e));
+        }
+
+        function playJumpSound() {
+            jumpSound.currentTime = 0;
+            jumpSound.play().catch(e => console.log('ジャンプ音再生エラー:', e));
+        }
+
+        // 英単語リスト
+        const wordList = [
+            { word: 'APPLE', meaning: 'りんご', emoji: '🍎' },
+            { word: 'CAT', meaning: 'ねこ', emoji: '🐱' },
+            { word: 'DOG', meaning: 'いぬ', emoji: '🐕' },
+            { word: 'SUN', meaning: 'たいよう', emoji: '☀️' },
+            { word: 'STAR', meaning: 'ほし', emoji: '⭐' },
+            { word: 'FISH', meaning: 'さかな', emoji: '🐟' },
+            { word: 'BIRD', meaning: 'とり', emoji: '🐦' },
+            { word: 'TREE', meaning: 'き', emoji: '🌳' },
+            { word: 'FLOWER', meaning: 'はな', emoji: '🌸' },
+            { word: 'BOOK', meaning: 'ほん', emoji: '📚' },
+            { word: 'CAKE', meaning: 'ケーキ', emoji: '🍰' },
+            { word: 'BALL', meaning: 'ボール', emoji: '⚽' },
+            { word: 'HEART', meaning: 'ハート', emoji: '❤️' },
+            { word: 'MOON', meaning: 'つき', emoji: '🌙' },
+            { word: 'CAR', meaning: 'くるま', emoji: '🚗' }
+        ];
+
+        // 音楽コントロール
+        function toggleMusic() {
+            if (musicPlaying) {
+                bgMusic.pause();
+                document.getElementById('musicControl').textContent = '🔇';
+                musicPlaying = false;
+            } else {
+                bgMusic.play().then(() => {
+                    console.log('音楽再生開始');
+                    musicPlaying = true;
+                    document.getElementById('musicControl').textContent = '🔊';
+                }).catch(e => {
+                    console.log('音楽再生エラー:', e);
+                });
+            }
+        }
+
+        // 音楽付きでゲーム開始
+        function startGameWithMusic() {
+            document.getElementById('startScreen').classList.add('hide');
+            
+            bgMusic.play().then(() => {
+                console.log('音楽再生開始 - おしりプリプリダンス♪');
+                musicPlaying = true;
+                document.getElementById('musicControl').textContent = '🔊';
+            }).catch(e => {
+                console.log('音楽再生エラー:', e);
+                musicPlaying = false;
+                document.getElementById('musicControl').textContent = '🔇';
+            });
+        }
+
+        // ゲーム変数
+        let gameRunning = true;
+        let score = 0;
+        let frameCount = 0;
+        let gameSpeed = 5;
+        let wordsCompleted = 0;
+
+        // 現在の単語
+        let currentWordIndex = 0;
+        let currentWord = wordList[currentWordIndex].word;
+        let collectedLetters = [];
+        let nextLetterIndex = 0;
+
+        // プレイヤー
+        const player = {
+            x: 100,
+            y: 270,
+            width: 50,
+            height: 70,
+            velocityY: 0,
+            jumping: false,
+            jumpPower: 15,
+            gravity: 0.8,
+            walkFrame: 0
+        };
+
+        // 障害物配列
+        let obstacles = [];
+
+        // アルファベット配列
+        let letters = [];
+
+        // 雲の配列
+        let clouds = [];
+
+        // 初期化
+        function init() {
+            obstacles = [];
+            letters = [];
+            clouds = [];
+            score = 0;
+            frameCount = 0;
+            gameSpeed = 5;
+            wordsCompleted = 0;
+            currentWordIndex = 0;
+            player.y = 270;
+            player.velocityY = 0;
+            player.jumping = false;
+            player.walkFrame = 0;
+            gameRunning = true;
+
+            loadNewWord();
+
+            // 初期の雲を配置
+            for (let i = 0; i < 5; i++) {
+                clouds.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * 150 + 30,
+                    width: 60 + Math.random() * 40,
+                    speed: 0.5 + Math.random() * 1
+                });
+            }
+
+            document.getElementById('gameOver').classList.remove('show');
+            updateScore();
+            updateWordProgress();
+        }
+
+        // 新しい単語を読み込む
+        function loadNewWord() {
+            currentWord = wordList[currentWordIndex].word;
+            collectedLetters = [];
+            nextLetterIndex = 0;
+            document.getElementById('targetWord').textContent = currentWord;
+            updateWordProgress();
+        }
+
+        // 単語の進捗を更新
+        function updateWordProgress() {
+            const lettersHTML = currentWord.split('').map((letter, index) => {
+                if (index < collectedLetters.length) {
+                    return `<span class="collected">${letter}</span>`;
+                } else {
+                    return `<span class="not-collected">${letter}</span>`;
+                }
+            }).join('');
+            document.getElementById('collectedLetters').innerHTML = lettersHTML;
+        }
+
+        // イラスト通りのキャラクター描画
+        function drawCharacter(x, y, walkFrame, isJumping) {
+            ctx.save();
+            ctx.translate(x, y);
+            ctx.strokeStyle = '#000';
+            ctx.fillStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            // 歩行アニメーションの足の位置
+            let leftLegAngle = 0;
+            let rightLegAngle = 0;
+            let leftArmAngle = 0;
+            let rightArmAngle = 0;
+
+            if (!isJumping) {
+                if (walkFrame === 0) {
+                    leftLegAngle = -15;
+                    rightLegAngle = 15;
+                    leftArmAngle = 15;
+                    rightArmAngle = -15;
+                } else if (walkFrame === 1) {
+                    leftLegAngle = 0;
+                    rightLegAngle = 0;
+                    leftArmAngle = 0;
+                    rightArmAngle = 0;
+                } else {
+                    leftLegAngle = 15;
+                    rightLegAngle = -15;
+                    leftArmAngle = -15;
+                    rightArmAngle = 15;
+                }
+            }
+
+            // 頭の輪郭（大きな丸）
+            ctx.beginPath();
+            ctx.arc(0, -45, 18, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 髪の毛（長い髪）
+            ctx.beginPath();
+            ctx.moveTo(-18, -45);
+            ctx.bezierCurveTo(-22, -35, -20, -15, -18, 0);
+            ctx.stroke();
+            
+            ctx.beginPath();
+            ctx.moveTo(18, -45);
+            ctx.bezierCurveTo(22, -35, 20, -15, 18, 0);
+            ctx.stroke();
+
+            // 前髪
+            ctx.beginPath();
+            ctx.moveTo(-12, -55);
+            ctx.lineTo(-12, -48);
+            ctx.moveTo(-6, -58);
+            ctx.lineTo(-6, -50);
+            ctx.moveTo(0, -60);
+            ctx.lineTo(0, -52);
+            ctx.moveTo(6, -58);
+            ctx.lineTo(6, -50);
+            ctx.moveTo(12, -55);
+            ctx.lineTo(12, -48);
+            ctx.stroke();
+
+            // 耳
+            ctx.beginPath();
+            ctx.arc(-15, -45, 3, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // 目
+            ctx.beginPath();
+            ctx.arc(-6, -47, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(6, -47, 1.5, 0, Math.PI * 2);
+            ctx.fill();
+
+            // 笑顔
+            ctx.beginPath();
+            ctx.arc(0, -42, 5, 0, Math.PI);
+            ctx.stroke();
+
+            // 首
+            ctx.beginPath();
+            ctx.moveTo(-3, -27);
+            ctx.lineTo(-3, -20);
+            ctx.moveTo(3, -27);
+            ctx.lineTo(3, -20);
+            ctx.stroke();
+
+            // 体
+            ctx.beginPath();
+            ctx.moveTo(-8, -20);
+            ctx.lineTo(-15, 15);
+            ctx.lineTo(15, 15);
+            ctx.lineTo(8, -20);
+            ctx.closePath();
+            ctx.stroke();
+
+            // 左腕
+            ctx.save();
+            ctx.translate(-8, -15);
+            ctx.rotate(leftArmAngle * Math.PI / 180);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(-8, 15);
+            ctx.stroke();
+            ctx.restore();
+
+            // 右腕（花を持つ）
+            ctx.save();
+            ctx.translate(8, -15);
+            ctx.rotate(rightArmAngle * Math.PI / 180);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(8, 12);
+            ctx.stroke();
+            
+            // 花
+            ctx.translate(8, 12);
+            for (let i = 0; i < 5; i++) {
+                ctx.save();
+                ctx.rotate((i * 72) * Math.PI / 180);
+                ctx.beginPath();
+                ctx.arc(0, -4, 2.5, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+            ctx.beginPath();
+            ctx.arc(0, 0, 2, 0, Math.PI * 2);
+            ctx.stroke();
+            ctx.restore();
+
+            // 左足
+            ctx.save();
+            ctx.translate(-7, 15);
+            ctx.rotate(leftLegAngle * Math.PI / 180);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, 18);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, 18);
+            ctx.lineTo(4, 18);
+            ctx.stroke();
+            ctx.restore();
+
+            // 右足
+            ctx.save();
+            ctx.translate(7, 15);
+            ctx.rotate(rightLegAngle * Math.PI / 180);
+            ctx.beginPath();
+            ctx.moveTo(0, 0);
+            ctx.lineTo(0, 18);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.moveTo(0, 18);
+            ctx.lineTo(4, 18);
+            ctx.stroke();
+            ctx.restore();
+
+            ctx.restore();
+        }
+
+        // プレイヤーを描画
+        function drawPlayer() {
+            const groundY = 270;
+            const walkSpeed = 10;
+            player.walkFrame = Math.floor(frameCount / walkSpeed) % 3;
+            
+            drawCharacter(
+                player.x + 25, 
+                player.y + 35, 
+                player.walkFrame, 
+                player.jumping || player.y < groundY
+            );
+        }
+
+        // アルファベットを描画
+        function drawLetter(letter) {
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(letter.x + 20, letter.y + 20, 25, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.strokeStyle = '#FFA500';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            ctx.fillStyle = '#333';
+            ctx.font = 'bold 30px Arial';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(letter.letter, letter.x + 20, letter.y + 20);
+
+            const sparkle = Math.sin(frameCount * 0.1 + letter.x) * 5;
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(letter.x + 10 + sparkle, letter.y + 10, 3, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.beginPath();
+            ctx.arc(letter.x + 30 - sparkle, letter.y + 30, 3, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 雲を描画
+        function drawCloud(cloud) {
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.beginPath();
+            ctx.arc(cloud.x, cloud.y, 20, 0, Math.PI * 2);
+            ctx.arc(cloud.x + 20, cloud.y, 25, 0, Math.PI * 2);
+            ctx.arc(cloud.x + 40, cloud.y, 20, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 障害物を描画
+        function drawObstacle(obstacle) {
+            if (obstacle.type === 'cactus') {
+                ctx.fillStyle = '#228B22';
+                ctx.fillRect(obstacle.x + 10, obstacle.y, 20, obstacle.height);
+                ctx.fillRect(obstacle.x, obstacle.y + 20, 15, 20);
+                ctx.fillRect(obstacle.x + 25, obstacle.y + 20, 15, 20);
+            } else if (obstacle.type === 'rock') {
+                ctx.fillStyle = '#696969';
+                ctx.beginPath();
+                ctx.moveTo(obstacle.x + obstacle.width / 2, obstacle.y);
+                ctx.lineTo(obstacle.x + obstacle.width, obstacle.y + obstacle.height);
+                ctx.lineTo(obstacle.x, obstacle.y + obstacle.height);
+                ctx.closePath();
+                ctx.fill();
+
+                ctx.fillStyle = '#A9A9A9';
+                ctx.beginPath();
+                ctx.moveTo(obstacle.x + obstacle.width / 2, obstacle.y);
+                ctx.lineTo(obstacle.x + obstacle.width / 2 + 10, obstacle.y + 10);
+                ctx.lineTo(obstacle.x + obstacle.width / 2, obstacle.y + 20);
+                ctx.closePath();
+                ctx.fill();
+            }
+        }
+
+        // 地面を描画
+        function drawGround() {
+            const groundY = 330;
+            
+            ctx.fillStyle = '#7CCD7C';
+            ctx.fillRect(0, groundY, canvas.width, 70);
+
+            ctx.fillStyle = '#8B4513';
+            ctx.fillRect(0, groundY + 30, canvas.width, 40);
+
+            ctx.fillStyle = '#228B22';
+            for (let i = 0; i < canvas.width; i += 30) {
+                const offset = (frameCount + i) % 30;
+                ctx.fillRect(i - offset, groundY, 3, 10);
+                ctx.fillRect(i - offset + 10, groundY, 3, 8);
+                ctx.fillRect(i - offset + 20, groundY, 3, 12);
+            }
+        }
+
+        // 背景を描画
+        function drawBackground() {
+            const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+            gradient.addColorStop(0, '#87CEEB');
+            gradient.addColorStop(0.5, '#98D8E8');
+            gradient.addColorStop(0.5, '#90EE90');
+            gradient.addColorStop(1, '#7CCD7C');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.fillStyle = '#FFD700';
+            ctx.beginPath();
+            ctx.arc(700, 80, 40, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.fillStyle = 'rgba(255, 215, 0, 0.3)';
+            ctx.beginPath();
+            ctx.arc(700, 80, 60, 0, Math.PI * 2);
+            ctx.fill();
+        }
+
+        // 雲を更新
+        function updateClouds() {
+            clouds.forEach(cloud => {
+                cloud.x -= cloud.speed;
+                
+                if (cloud.x + cloud.width < 0) {
+                    cloud.x = canvas.width + 50;
+                    cloud.y = Math.random() * 150 + 30;
+                }
+            });
+
+            clouds.forEach(cloud => drawCloud(cloud));
+        }
+
+        // ジャンプ
+        function jump() {
+            if (!player.jumping) {
+                player.velocityY = -player.jumpPower;
+                player.jumping = true;
+                playJumpSound(); // ジャンプ音を再生
+            }
+        }
+
+        // プレイヤーを更新
+        function updatePlayer() {
+            player.velocityY += player.gravity;
+            player.y += player.velocityY;
+
+            const groundY = 270;
+
+            if (player.y >= groundY) {
+                player.y = groundY;
+                player.velocityY = 0;
+                player.jumping = false;
+            }
+        }
+
+        // アルファベットを生成
+        function spawnLetter() {
+            if (nextLetterIndex < currentWord.length && frameCount % 80 === 0) {
+                letters.push({
+                    x: canvas.width,
+                    y: 150 + Math.random() * 80,
+                    width: 40,
+                    height: 40,
+                    letter: currentWord[nextLetterIndex]
+                });
+                nextLetterIndex++;
+            }
+        }
+
+        // アルファベットを更新
+        function updateLetters() {
+            letters.forEach((letter, index) => {
+                letter.x -= gameSpeed;
+
+                if (checkCollision(player, letter)) {
+                    letters.splice(index, 1);
+                    collectedLetters.push(letter.letter);
+                    updateWordProgress();
+                    score += 20;
+                    updateScore();
+                    playCoinSound(); // コイン音を再生！
+
+                    if (collectedLetters.length === currentWord.length) {
+                        wordCompleted();
+                    }
+                }
+
+                if (letter.x + letter.width < 0) {
+                    letters.splice(index, 1);
+                }
+
+                drawLetter(letter);
+            });
+        }
+
+        // 単語完成
+        function wordCompleted() {
+            gameRunning = false;
+            wordsCompleted++;
+            
+            const wordData = wordList[currentWordIndex];
+            document.getElementById('completedWord').textContent = wordData.word;
+            document.getElementById('wordMeaning').textContent = `${wordData.meaning} ${wordData.emoji}`;
+            document.getElementById('wordComplete').classList.add('show');
+        }
+
+        // ゲームを続ける
+        function continueGame() {
+            document.getElementById('wordComplete').classList.remove('show');
+            
+            currentWordIndex = (currentWordIndex + 1) % wordList.length;
+            loadNewWord();
+            
+            gameRunning = true;
+            gameLoop();
+        }
+
+        // 障害物を生成
+        function spawnObstacle() {
+            if (frameCount % 150 === 0) {
+                const types = ['cactus', 'rock'];
+                const type = types[Math.floor(Math.random() * types.length)];
+                
+                let obstacle = {
+                    x: canvas.width,
+                    type: type
+                };
+
+                if (type === 'cactus') {
+                    obstacle.y = 280;
+                    obstacle.width = 40;
+                    obstacle.height = 50;
+                } else if (type === 'rock') {
+                    obstacle.y = 290;
+                    obstacle.width = 40;
+                    obstacle.height = 40;
+                }
+
+                obstacles.push(obstacle);
+            }
+        }
+
+        // 障害物を更新
+        function updateObstacles() {
+            obstacles.forEach((obstacle, index) => {
+                obstacle.x -= gameSpeed;
+
+                if (checkCollision(player, obstacle)) {
+                    gameOver();
+                }
+
+                if (obstacle.x + obstacle.width < 0) {
+                    obstacles.splice(index, 1);
+                    score += 5;
+                    updateScore();
+                }
+
+                drawObstacle(obstacle);
+            });
+        }
+
+        // 衝突判定
+        function checkCollision(player, obj) {
+            return player.x < obj.x + obj.width &&
+                   player.x + player.width > obj.x &&
+                   player.y < obj.y + obj.height &&
+                   player.y + player.height > obj.y;
+        }
+
+        // スコア更新
+        function updateScore() {
+            document.getElementById('score').textContent = score;
+        }
+
+        // ゲームオーバー
+        function gameOver() {
+            gameRunning = false;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('learnedWords').textContent = wordsCompleted;
+            document.getElementById('gameOver').classList.add('show');
+        }
+
+        // ゲームループ
+        function gameLoop() {
+            if (!gameRunning) return;
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            drawBackground();
+            updateClouds();
+            drawGround();
+            updatePlayer();
+            drawPlayer();
+            spawnLetter();
+            updateLetters();
+            spawnObstacle();
+            updateObstacles();
+
+            frameCount++;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        // ゲーム再開
+        function restartGame() {
+            init();
+            gameLoop();
+        }
+
+        // イベントリスナー
+        canvas.addEventListener('click', jump);
+        canvas.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            jump();
+        });
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                jump();
+            }
+        });
+
+        // ゲーム開始
+        init();
+        gameLoop();
+    </script>
+</body>
+</html>
