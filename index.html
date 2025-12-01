@@ -383,14 +383,14 @@
         const ctx = canvas.getContext('2d');
         
         // 音楽と効果音
-        const bgMusic = new Audio('https://www.genspark.ai/api/files/s/wHf7b5eg?token=Z0FBQUFBQnBMUURYU3NvWjY4eGhtX0JjSFA2U2FscjBxSTNlcXY3aGRtY2M0a0lhZkZTRDFnajY2Z2IzSWUydmpaOVR1SDJGVDFrMUNlRHh5aWlKRzJvRjVSMGk4bnN1bEdPQmFDOXZncFRucmo1WlprUnI2UkNpb0VUeDJkanFIV0tWeFdoSF9FX1d6NHU2QTV6c1AxMF80U2diM1BYaXdQQk11cmd4SnJfQ0NjR3BmVGNOWFE3MkJIWUZyamRjTmw5QVo4Nlo1a0w0TjZtYU85TUU5VWNFeG80LTRYdURpekRROE0weEVZYzJQcEZUMVhEdmR3emJuNWgyWkdEMjBkRmlPQS1nZmU3UFVSekhpNlgxeXdrWEpUQVU2V2R4VEE9PQ');
+        const bgMusic = new Audio('assets/bgmusic.mp3');
         bgMusic.loop = true;
         bgMusic.volume = 0.4;
         
-        const coinSound = new Audio('https://www.genspark.ai/api/files/s/kw7x3Frj?token=Z0FBQUFBQnBMUURYNFNqMVRmSlVVM3lvVTRFZ3VfNkU1LWxHcDNiQ2ZXdDVUWTVIZzRjUEo4aEM3X1JtTWJLZUdxYlJoLVFvSzJMSkEwY04zNjFzTFNkQ1NneWhELVZJcUlNeHdSSjFUY09XenNEZTRPaWFCU2F3eWNEVzlqbHJ4dVhFUWh5QVhFbk0yZUtRelcwQURfWExnaGhGSUk0a0s1OEVqMDJsUmpiNFVYSkF2ZXRtWGxsN1lBdmFpczhpREtnRDJQazVoN0k5YzZISzEzYjRDdE1ja3kwcVRDSExnLWVfdXZsa1NWSHB0WGhIZmhuS2ZwRFRsdTVjZ3VuRUJ3eVJBNkZiZnQ1bk5aa0s2MzFRaFRpa2xtZm5pSV9aelE9PQ');
+        const coinSound = new Audio('assets/coin_effect.mp3');
         coinSound.volume = 0.6;
         
-        const jumpSound = new Audio('https://www.genspark.ai/api/files/s/k9ALmx31?token=Z0FBQUFBQnBMVURYdTRVMm83WXV2QUlwWDZYSk51dDdWSTJJTE5SOWRka0ZCZ2FoV282UElwWldCM3dkbDJWYXZ1dVM2YUFrbDZkd3REMU1yWV9uMEp4ZmdWbXlnZUxCNmxYVzNFNEZXOWlMUTFaZmhINXlZQTNCX1Z6TUdkOG1CRHR4TW5CVlZxbGI0RVlBZVBfcDhyM2o5NUNiOXNyc1JlVHhhMkM0N3c1RWROSEZ5aE1fYjdQUW5RQzdwdXNOOVJLNDBBRER0U1gtQ1ZfU0pFWTJuRklDOVpVdE5NTHR6WGF5QTdKOUt6WHk5dVN6THcxQ3dCS2dNTmYxc2ROVlI4eWFPNm5kak1rclFULVVIekxVbWNmLTJQZEU2eUx1Znc9PQ');
+        const jumpSound = new Audio('assets/jump_effect.mp3');
         jumpSound.volume = 0.5;
         
         let musicPlaying = false;
