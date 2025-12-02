@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>英語ジャンプゲーム - オリジナルキャラクター</title>
+    <title>English Jump - Word Learning Game</title>
     <style>
         * {
             margin: 0;
@@ -263,13 +263,14 @@
             background: white;
         }
 
+        /* スタート画面のスタイル */
         .start-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             display: flex;
             justify-content: center;
             align-items: center;
@@ -281,29 +282,81 @@
         }
 
         .start-content {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            padding: 60px 80px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 50px 70px;
             border-radius: 30px;
             text-align: center;
-            animation: popup 0.5s ease;
+            animation: popup 0.7s ease;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+            max-width: 600px;
         }
 
         .start-content h2 {
-            font-size: 3.5em;
-            color: white;
+            font-size: 4em;
+            color: #FF6B6B;
+            margin-bottom: 20px;
+            text-shadow: 3px 3px 0px rgba(0, 0, 0, 0.1);
+            -webkit-text-stroke: 1px #333;
+        }
+
+        .start-content .subtitle {
+            font-size: 1.5em;
+            color: #667eea;
             margin-bottom: 30px;
-            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+            font-weight: bold;
         }
 
         .start-content p {
-            font-size: 1.5em;
+            font-size: 1.3em;
+            color: #555;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+
+        .difficulty-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin: 30px 0;
+        }
+
+        .difficulty-btn {
+            background: linear-gradient(to right, #4CAF50, #45a049);
             color: white;
-            margin-bottom: 20px;
+            font-size: 1.8em;
+            padding: 20px 50px;
+            border-radius: 50px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 20px rgba(76, 175, 80, 0.4);
+            font-weight: bold;
+        }
+
+        .difficulty-btn.hard {
+            background: linear-gradient(to right, #FF6B6B, #FF5252);
+            box-shadow: 0 8px 20px rgba(255, 107, 107, 0.4);
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.3);
+        }
+
+        .difficulty-btn:active {
+            transform: translateY(0);
+        }
+
+        .difficulty-label {
+            display: block;
+            font-size: 0.6em;
+            margin-top: 5px;
+            opacity: 0.9;
         }
 
         .music-note {
             font-size: 2em;
-            margin-bottom: 30px;
+            margin: 20px 0;
             animation: bounce 1s infinite;
         }
 
@@ -312,15 +365,13 @@
             50% { transform: translateY(-10px); }
         }
 
-        .start-btn {
-            background: linear-gradient(to bottom, #FFD700, #FFA500);
+        .how-to-play {
+            background: rgba(103, 126, 234, 0.1);
+            padding: 15px;
+            border-radius: 15px;
+            margin-top: 20px;
+            font-size: 1.1em;
             color: #333;
-            font-size: 2em;
-            padding: 20px 60px;
-        }
-
-        .start-btn:hover {
-            background: linear-gradient(to bottom, #FFA500, #FF8C00);
         }
     </style>
 </head>
@@ -328,11 +379,27 @@
     <!-- スタート画面 -->
     <div class="start-screen" id="startScreen">
         <div class="start-content">
-            <h2>🎮 英語ジャンプゲーム 🎮</h2>
+            <h2>🎮 English Jump 🎮</h2>
+            <div class="subtitle">英単語学習ゲーム</div>
             <div class="music-note">🎵 🎶 🎵</div>
-            <p>おしりプリプリダンス♪</p>
-            <p style="font-size: 1.2em;">音楽と効果音付きで楽しもう！</p>
-            <button class="start-btn" onclick="startGameWithMusic()">スタート！</button>
+            <p>難易度を選んでください：</p>
+            
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn" onclick="startGame('easy')">
+                    🟢 Easy Mode
+                    <span class="difficulty-label">障害物なし・ゆっくり</span>
+                </button>
+                <button class="difficulty-btn hard" onclick="startGame('hard')">
+                    🔴 Hard Mode
+                    <span class="difficulty-label">障害物あり・速い</span>
+                </button>
+            </div>
+
+            <div class="how-to-play">
+                <strong>🎯 遊び方</strong><br>
+                画面をクリック or スペースキーでジャンプ！<br>
+                アルファベットを順番に集めて単語を完成させよう！
+            </div>
         </div>
     </div>
 
@@ -342,7 +409,7 @@
     </div>
 
     <div class="game-container">
-        <h1>🎮 英語ジャンプゲーム 🎮</h1>
+        <h1>🎮 English Jump 🎮</h1>
         <div class="info-panel">
             <div class="score-board">
                 スコア: <span id="score">0</span>
@@ -382,18 +449,24 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // 音楽と効果音
-        const bgMusic = new Audio('assets/bgmusic.mp3');
+        // 音声ファイルのパス（AI Driveから取得した最新URL）
+        const bgMusic = new Audio('https://www.genspark.ai/api/files/s/OJtQX7og?token=Z0FBQUFBQnBMbkprU2tCTWZiU1M4aXQzVlgzTVcyaEhGeFcyZWNNdXAxd1pqOTVNNXZYVWVIRXkzdkVnSmxSanVfX1pRUHZ0OVVIZ3JKZnljaWFQd3dHUUo4M1Y3SFQxTFJGV0JtWnczMHdWOG4tRFozdEZrVGNmLVZveVhtU1c3MGtGNFVRTWtuMTN3YlF0bTBNM3Q1UXpYX3BYM2dGWmI3QWh3MndUakNnTnNPTWlWMms4NmtDeks2NWhLeVFCVzdIZFY5bDJqekVCUWZaUDAtMlZ5MGlBTS1iX25KenBOQW1sLTk4MkxZU3BJZ2ZxckttQ1NtMWkxUVZMa2ttQW5pdzhWUEpWanM0eFQzaTFqTXhXOWU0bVhzV3NUZm5haUE9PQ');
         bgMusic.loop = true;
         bgMusic.volume = 0.4;
         
-        const coinSound = new Audio('assets/coin_effect.mp3');
+        const coinSound = new Audio('https://www.genspark.ai/api/files/s/NvdCggu9?token=Z0FBQUFBQnBMbkpYTkxPNHR5d2RFUEVyUHJUR24xaXY3UllBRi0wTzItS3UzaXpDR294MjRoREdLd18wdjlIRmRmTGhhUmhXMzY5TmVXYnpKdU9WTFllaHFRN3Q2ZU1CVFItRUtzcTRNWl9zbjR1SUdnQUlGVEZ3bHgzX24zaUlwYVVKYlAtSnlZd004U2xvbTl4MndkVDlFeHc1N2xnX3V5YTByUjM0dFpqODB6YnZTR1NaZm5KRUx3dnJUcXFBc1lNVVBjYnhkMkhyeGJzYUpiU0pjUlhHTWxTU2NKSjZyT3RlY2J1SmxhM2FPVjltLUhBbU5JeHhLSWlCM2JNTWVEN1pqeGszMUFCblVlbktvZkdKZWR6OEhrbUlWY1VOanc9PQ');
         coinSound.volume = 0.6;
         
-        const jumpSound = new Audio('assets/jump_effect.mp3');
+        const jumpSound = new Audio('https://www.genspark.ai/api/files/s/r846F8UP?token=Z0FBQUFBQnBMbkpYRk1WUE1Cb1JVNmJLRmhqajBxYy1uS0dyWkNKcUtXZ3pWeDdlVExjT0ltd01ZeXpoS2tuMmFsZ1M2V3YxeU83b1c1alRpclZRZXlnZDEzOFA3SVZOaVhwSkN3cklwNDU4TDV2NWZ0ZWpTMUpNajliQm95R016QVZidnBJTWVWSjgwRkpoWDVUY0dDazNsRUJ2NWZMaXM0Q3RjVjdrcVVBdmJNY2dsRkJndjFKR3hkVlZrUVVQcV9qNV9KeXpHY05WZU9sWk9acWQ0RnJjYnRSaEtaTmF1U3VrVEt6SnFkN1RxcE5WR3JYT3E5elRXT3ZfSjlOUlpOVDJHaEZhZGRfbnBMclBhRGNvTXBLNUJ6Wm9TdzRLUXc9PQ');
         jumpSound.volume = 0.5;
         
         let musicPlaying = false;
+
+        // 難易度設定
+        let difficulty = 'easy'; // 'easy' or 'hard'
+        let gameSpeed = 5;
+        let letterSpawnInterval = 180;
+        let obstaclesEnabled = false;
 
         // 効果音を再生する関数
         function playCoinSound() {
@@ -442,10 +515,23 @@
             }
         }
 
-        // 音楽付きでゲーム開始
-        function startGameWithMusic() {
+        // ゲーム開始（難易度選択）
+        function startGame(selectedDifficulty) {
+            difficulty = selectedDifficulty;
+            
+            if (difficulty === 'easy') {
+                gameSpeed = 5;
+                letterSpawnInterval = 180;
+                obstaclesEnabled = false;
+            } else {
+                gameSpeed = 8;
+                letterSpawnInterval = 120;
+                obstaclesEnabled = true;
+            }
+            
             document.getElementById('startScreen').classList.add('hide');
             
+            // BGM再生
             bgMusic.play().then(() => {
                 console.log('音楽再生開始 - おしりプリプリダンス♪');
                 musicPlaying = true;
@@ -455,13 +541,15 @@
                 musicPlaying = false;
                 document.getElementById('musicControl').textContent = '🔇';
             });
+            
+            init();
+            gameLoop();
         }
 
         // ゲーム変数
-        let gameRunning = true;
+        let gameRunning = false;
         let score = 0;
         let frameCount = 0;
-        let gameSpeed = 5;
         let wordsCompleted = 0;
 
         // 現在の単語
@@ -499,7 +587,6 @@
             clouds = [];
             score = 0;
             frameCount = 0;
-            gameSpeed = 5;
             wordsCompleted = 0;
             currentWordIndex = 0;
             player.y = 270;
@@ -847,7 +934,7 @@
             if (!player.jumping) {
                 player.velocityY = -player.jumpPower;
                 player.jumping = true;
-                playJumpSound(); // ジャンプ音を再生
+                playJumpSound();
             }
         }
 
@@ -867,7 +954,7 @@
 
         // アルファベットを生成
         function spawnLetter() {
-            if (nextLetterIndex < currentWord.length && frameCount % 80 === 0) {
+            if (nextLetterIndex < currentWord.length && frameCount % letterSpawnInterval === 0) {
                 letters.push({
                     x: canvas.width,
                     y: 150 + Math.random() * 80,
@@ -890,15 +977,20 @@
                     updateWordProgress();
                     score += 20;
                     updateScore();
-                    playCoinSound(); // コイン音を再生！
+                    playCoinSound();
 
                     if (collectedLetters.length === currentWord.length) {
                         wordCompleted();
                     }
                 }
 
+                // 取り逃した場合、再度出現させる
                 if (letter.x + letter.width < 0) {
                     letters.splice(index, 1);
+                    // 取り逃したアルファベットのインデックスに戻す
+                    if (nextLetterIndex > collectedLetters.length) {
+                        nextLetterIndex = collectedLetters.length;
+                    }
                 }
 
                 drawLetter(letter);
@@ -929,7 +1021,9 @@
 
         // 障害物を生成
         function spawnObstacle() {
-            if (frameCount % 500 === 0) {
+            if (!obstaclesEnabled) return;
+            
+            if (frameCount % 150 === 0) {
                 const types = ['cactus', 'rock'];
                 const type = types[Math.floor(Math.random() * types.length)];
                 
@@ -954,6 +1048,8 @@
 
         // 障害物を更新
         function updateObstacles() {
+            if (!obstaclesEnabled) return;
+            
             obstacles.forEach((obstacle, index) => {
                 obstacle.x -= gameSpeed;
 
@@ -1015,8 +1111,8 @@
 
         // ゲーム再開
         function restartGame() {
-            init();
-            gameLoop();
+            document.getElementById('gameOver').classList.remove('show');
+            document.getElementById('startScreen').classList.remove('hide');
         }
 
         // イベントリスナー
@@ -1032,10 +1128,6 @@
                 jump();
             }
         });
-
-        // ゲーム開始
-        init();
-        gameLoop();
     </script>
 </body>
 </html>
