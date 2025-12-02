@@ -449,15 +449,15 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         
-        // 音声ファイルのパス（AI Driveから取得した最新URL）
-        const bgMusic = new Audio('https://www.genspark.ai/api/files/s/OJtQX7og?token=Z0FBQUFBQnBMbkprU2tCTWZiU1M4aXQzVlgzTVcyaEhGeFcyZWNNdXAxd1pqOTVNNXZYVWVIRXkzdkVnSmxSanVfX1pRUHZ0OVVIZ3JKZnljaWFQd3dHUUo4M1Y3SFQxTFJGV0JtWnczMHdWOG4tRFozdEZrVGNmLVZveVhtU1c3MGtGNFVRTWtuMTN3YlF0bTBNM3Q1UXpYX3BYM2dGWmI3QWh3MndUakNnTnNPTWlWMms4NmtDeks2NWhLeVFCVzdIZFY5bDJqekVCUWZaUDAtMlZ5MGlBTS1iX25KenBOQW1sLTk4MkxZU3BJZ2ZxckttQ1NtMWkxUVZMa2ttQW5pdzhWUEpWanM0eFQzaTFqTXhXOWU0bVhzV3NUZm5haUE9PQ');
+        // 音声ファイルのパス（GitHubにasssetsフォルダにアップロード後のパス）
+        const bgMusic = new Audio('assets/bgmusic.mp3');
         bgMusic.loop = true;
         bgMusic.volume = 0.4;
         
-        const coinSound = new Audio('https://www.genspark.ai/api/files/s/NvdCggu9?token=Z0FBQUFBQnBMbkpYTkxPNHR5d2RFUEVyUHJUR24xaXY3UllBRi0wTzItS3UzaXpDR294MjRoREdLd18wdjlIRmRmTGhhUmhXMzY5TmVXYnpKdU9WTFllaHFRN3Q2ZU1CVFItRUtzcTRNWl9zbjR1SUdnQUlGVEZ3bHgzX24zaUlwYVVKYlAtSnlZd004U2xvbTl4MndkVDlFeHc1N2xnX3V5YTByUjM0dFpqODB6YnZTR1NaZm5KRUx3dnJUcXFBc1lNVVBjYnhkMkhyeGJzYUpiU0pjUlhHTWxTU2NKSjZyT3RlY2J1SmxhM2FPVjltLUhBbU5JeHhLSWlCM2JNTWVEN1pqeGszMUFCblVlbktvZkdKZWR6OEhrbUlWY1VOanc9PQ');
+        const coinSound = new Audio('assets/coin_effect.mp3');
         coinSound.volume = 0.6;
         
-        const jumpSound = new Audio('https://www.genspark.ai/api/files/s/r846F8UP?token=Z0FBQUFBQnBMbkpYRk1WUE1Cb1JVNmJLRmhqajBxYy1uS0dyWkNKcUtXZ3pWeDdlVExjT0ltd01ZeXpoS2tuMmFsZ1M2V3YxeU83b1c1alRpclZRZXlnZDEzOFA3SVZOaVhwSkN3cklwNDU4TDV2NWZ0ZWpTMUpNajliQm95R016QVZidnBJTWVWSjgwRkpoWDVUY0dDazNsRUJ2NWZMaXM0Q3RjVjdrcVVBdmJNY2dsRkJndjFKR3hkVlZrUVVQcV9qNV9KeXpHY05WZU9sWk9acWQ0RnJjYnRSaEtaTmF1U3VrVEt6SnFkN1RxcE5WR3JYT3E5elRXT3ZfSjlOUlpOVDJHaEZhZGRfbnBMclBhRGNvTXBLNUJ6Wm9TdzRLUXc9PQ');
+        const jumpSound = new Audio('assets/jump_effect.mp3');
         jumpSound.volume = 0.5;
         
         let musicPlaying = false;
@@ -1130,4 +1130,4 @@
         });
     </script>
 </body>
-</html>
+</html>                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
